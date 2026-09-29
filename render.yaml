@@ -41,7 +41,7 @@ services:
           property: connectionString
       # Managed Postgres requires SSL:
       - key: PGSSL
-        value: "true"
+        value: "false"
       # JWT secret is generated once by Render and kept stable:
       - key: JWT_SECRET
         generateValue: true
