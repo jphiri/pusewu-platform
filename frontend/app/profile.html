@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>My Profile</h1><p>Keep your details current and manage your data-protection choices.</p></div>
+      <div class="panel"><h2>Personal &amp; employment details</h2>
+        <div class="form-grid" id="fields"></div>
+        <button class="btn teal" id="saveBtn" onclick="saveProfile()">Save changes</button>
+        <span id="saved" class="pill ok" style="display:none;margin-left:.8rem">Saved</span>
+        <p class="err" id="err"></p>
+      </div>
+      <div class="panel"><h2>Data protection</h2>
+        <p style="font-size:.9rem;color:var(--mute);margin-bottom:.8rem">Under the Data Protection Act, 2021, your personal information is used solely for union purposes. You may request a copy of your data or ask us to correct it by contacting the Membership Office.</p>
+      </div>
+      <div class="panel"><h2>Withdraw membership</h2>
+        <p style="font-size:.9rem;color:var(--mute);margin-bottom:.8rem">You may withdraw at any time under the Industrial and Labour Relations Act, Cap 269. Contact the Membership Office to begin; a withdrawal notice will be prepared and District HR / PMEC informed to stop the deduction.</p>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+let _m=null;
+(async function(){
+  if(!PUSEWU.requireMember())return; PUSEWU.renderChrome('profile');
+  try{
+    const d=await PUSEWU.myDashboard(); _m=d.member;
+    const ro=['memberNo','nrc','employeeNo','ministry','branch']; // ministry editable below anyway
+    const f=[['phone','Phone',false],['station','Station',false],['jobTitle','Job title',false],['ministry','Ministry / Employer',false],
+             ['nrc','NRC number',true],['employeeNo','Employee number',true],['memberNo','Member number',true],['branch','Branch',true]];
+    document.getElementById('fields').innerHTML=f.map(([k,l,readonly])=>
+      `<div class="form-row"><label>${l}</label><input id="f_${k}" value="${(_m[k]||'').toString().replace(/"/g,'&quot;')}" ${readonly?'disabled':''}></div>`).join('');
+  }catch(e){ PUSEWU.showError(document.getElementById('fields'),e); }
+})();
+async function saveProfile(){
+  const err=document.getElementById('err'); err.classList.remove('show');
+  const patch={ phone:v('phone'), station:v('station'), jobTitle:v('jobTitle'), ministry:v('ministry') };
+  const btn=document.getElementById('saveBtn'); btn.disabled=true; btn.textContent='Saving…';
+  try{ await PUSEWU.updateProfile(patch); const s=document.getElementById('saved'); s.style.display='inline-block'; setTimeout(()=>s.style.display='none',1600); }
+  catch(e){ err.textContent=e.message; err.classList.add('show'); }
+  finally{ btn.disabled=false; btn.textContent='Save changes'; }
+}
+function v(k){ const el=document.getElementById('f_'+k); return el?el.value:undefined; }
+</script>
+</body>
+</html>

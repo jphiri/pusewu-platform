@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Membership Office — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>Membership Office</h1><p>Review and approve membership applications.</p></div>
+      <div class="grid-3">
+        <div class="tile"><div class="label">Pending applications</div><div class="big" id="cPending">—</div><div class="sub">awaiting review</div></div>
+        <div class="tile"><div class="label">Approved</div><div class="big" id="cApproved" style="color:var(--ok)">—</div><div class="sub">this list</div></div>
+        <div class="tile"><div class="label">Rejected</div><div class="big" id="cRejected" style="color:var(--danger)">—</div><div class="sub">this list</div></div>
+      </div>
+      <div class="panel"><h2>Membership applications</h2><div id="apps"></div></div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){ if(!PUSEWU.requireRole('officer','admin'))return; PUSEWU.renderChrome('admin'); await render(); })();
+function statusPill(s){ if(s==='approved')return '<span class="pill ok dot">Approved</span>'; if(s==='rejected')return '<span class="pill danger dot">Rejected</span>'; return '<span class="pill warn dot">Pending</span>'; }
+async function render(){
+  const wrap=document.getElementById('apps');
+  try{
+    const r=await PUSEWU.listApplications(); const apps=r.applications||[];
+    document.getElementById('cPending').textContent=apps.filter(a=>a.status==='pending_review').length;
+    document.getElementById('cApproved').textContent=apps.filter(a=>a.status==='approved').length;
+    document.getElementById('cRejected').textContent=apps.filter(a=>a.status==='rejected').length;
+    wrap.innerHTML='<table class="data"><thead><tr><th>Ref</th><th>Applicant</th><th>Ministry</th><th>Basic pay</th><th>Type</th><th>Signed</th><th>Status</th><th>Action</th></tr></thead><tbody>'+
+      apps.map(a=>`<tr><td><b>${a.ref}</b></td>
+        <td>${a.first_name} ${a.surname}<br><span class="hint">NRC ${a.nrc}</span></td>
+        <td>${a.ministry||''}</td><td>${a.basic_pay?PUSEWU.money(a.basic_pay):'—'}</td>
+        <td>${a.switching?'<span class="pill warn">Switching</span>':'<span class="pill info">New</span>'}</td>
+        <td><span class="hint">${a.signed_name||'—'}</span></td>
+        <td>${statusPill(a.status)}</td>
+        <td>${a.status==='pending_review'?`<button class="btn teal sm" onclick="appr('${a.id}')">Approve</button> <button class="btn outline sm" style="border-color:var(--danger);color:var(--danger)" onclick="rej('${a.id}')">Reject</button>`:'—'}</td></tr>`).join('')+'</tbody></table>';
+  }catch(e){ PUSEWU.showError(wrap,e); }
+}
+async function appr(id){ try{ await PUSEWU.approveApplication(id); await render(); }catch(e){ alert(e.message); } }
+async function rej(id){ if(!confirm('Reject this application?'))return; try{ await PUSEWU.rejectApplication(id); await render(); }catch(e){ alert(e.message); } }
+</script>
+</body>
+</html>

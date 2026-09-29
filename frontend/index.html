@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PUSEWU — Public Service Workers Union | Workers First</title>
+<meta name="description" content="The Public Service Workers Union (PUSEWU). Join online, track your retirement savings, lodge and follow your case. Workers First.">
+<link rel="canonical" href="https://www.pusewu.org.zm/">
+<meta name="theme-color" content="#1F7A7A">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PUSEWU — Public Service Workers Union">
+<meta property="og:title" content="PUSEWU — Public Service Workers Union | Workers First">
+<meta property="og:description" content="Join Zambia's Public Service Workers Union. K150/month via PMEC (F396), K20 saved monthly to your retirement, K2,000 funeral grant, case tracking and more.">
+<meta property="og:url" content="https://www.pusewu.org.zm/">
+<meta property="og:image" content="https://www.pusewu.org.zm/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="topbar">
+    <div class="wrap">
+      <span><b>Workers First</b> — Solidarity in Action, Empowered We Rise</span>
+      <span>info@pusewu.org.zm</span>
+    </div>
+  </div>
+  <nav class="main" aria-label="Main navigation">
+    <a class="brand" href="index.html">
+      <img src="img/pusewu-logo.png" alt="PUSEWU seal — Public Service Workers Union">
+      <span class="name">PUSEWU<small>Public Service Workers Union</small></span>
+    </a>
+    <button class="menu-btn" aria-expanded="false" aria-controls="navlinks" onclick="toggleMenu(this)">☰<span class="sr">Menu</span></button>
+    <ul class="navlinks" id="navlinks">
+      <li><a href="#philosophy">Our Philosophy</a></li>
+      <li><a href="#benefits">Benefits</a></li>
+      <li><a href="#join">How to Join</a></li>
+      <li><a href="#cases">Case Library</a></li>
+      <li><a href="app/login.html">Member Login</a></li>
+      <li><a class="cta" href="app/apply.html">Join PUSEWU</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="hero" id="home" aria-roledescription="carousel" aria-label="PUSEWU highlights">
+  <div class="slides" id="slides" aria-live="polite">
+    <div class="slide active" role="group" aria-roledescription="slide" aria-label="1 of 4">
+      <div class="wrap">
+        <div>
+          <span class="eyebrow">Public Service Workers Union</span>
+          <h1>Workers <em>First.</em><br>In every ministry. In every decision.</h1>
+          <p>PUSEWU defends job security, fair pay and dignified conditions for Zambia's public service workers — and now you can join, sign and be represented without leaving your station.</p>
+          <div class="actions">
+            <a class="btn gold" href="app/apply.html">Join PUSEWU today</a>
+            <a class="btn ghost" href="#philosophy">Read our philosophy</a>
+          </div>
+        </div>
+        <div class="seal-panel" aria-hidden="true">
+          <div class="ring"></div><div class="ring r2"></div>
+          <img class="emblem" src="img/pusewu-logo.png" alt="">
+          <div class="stat-chip chip-a"><b>All</b>ministries served</div>
+          <div class="stat-chip chip-b"><b>Cap 269</b>your legal right to join</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide" role="group" aria-roledescription="slide" aria-label="2 of 4">
+      <div class="wrap">
+        <div>
+          <span class="eyebrow">Retirement Savings Scheme</span>
+          <h2>K20 of your subscription <em>comes back to you.</em></h2>
+          <p>Every month, K20 of your K150 PMEC deduction is saved in your name. Watch your balance grow on your dashboard, month by month — matured after 36 months and paid out when you retire.</p>
+          <div class="actions">
+            <a class="btn gold" href="#benefits">See your benefits</a>
+            <a class="btn ghost" href="app/apply.html">Start saving — join now</a>
+          </div>
+        </div>
+        <div class="seal-panel" aria-hidden="true">
+          <div class="ring"></div>
+          <svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <div class="stat-chip chip-a"><b>K20</b>saved for you monthly</div>
+          <div class="stat-chip chip-b"><b>36 mo</b>to maturity</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
+      <div class="wrap">
+        <div>
+          <span class="eyebrow">Your voice, tracked to resolution</span>
+          <h2>Lodge your issue. <em>Follow every step.</em></h2>
+          <p>Raise a salary dispute, unfair treatment or any workplace issue from your phone. See who is handling it, what stage it has reached, and how similar cases were resolved before.</p>
+          <div class="actions">
+            <a class="btn gold" href="#cases">Explore the case library</a>
+            <a class="btn ghost" href="app/login.html">Go to member portal</a>
+          </div>
+        </div>
+        <div class="seal-panel" aria-hidden="true">
+          <div class="ring"></div>
+          <svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M9 12l2 2 4-5M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4z"/></svg>
+          <div class="stat-chip chip-a"><b>SLA</b>timed responses</div>
+          <div class="stat-chip chip-b"><b>SMS</b>updates at every stage</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide" role="group" aria-roledescription="slide" aria-label="4 of 4">
+      <div class="wrap">
+        <div>
+          <span class="eyebrow">Already in another union?</span>
+          <h2>Switching to PUSEWU is <em>your right.</em></h2>
+          <p>Under the Industrial and Labour Relations Act, Cap 269, you may withdraw from your current union at any time. We prepare the withdrawal notice, notify District HR and PMEC, and bring you across — properly and formally.</p>
+          <div class="actions">
+            <a class="btn gold" href="app/apply.html">Switch to PUSEWU</a>
+            <a class="btn ghost" href="#philosophy">Why workers choose us</a>
+          </div>
+        </div>
+        <div class="seal-panel" aria-hidden="true">
+          <div class="ring"></div>
+          <svg class="slide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M4 7h13M13 3l4 4-4 4M20 17H7M11 13l-4 4 4 4"/></svg>
+          <div class="stat-chip chip-a"><b>Cap 269</b>s.5(f) &amp; s.22(2)</div>
+          <div class="stat-chip chip-b"><b>F396</b>one clean deduction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-controls">
+    <div class="wrap">
+      <div class="dots" role="tablist" aria-label="Choose slide">
+        <button class="dot active" role="tab" aria-selected="true" aria-label="Slide 1" onclick="goTo(0)"><span class="fill"></span></button>
+        <button class="dot" role="tab" aria-selected="false" aria-label="Slide 2" onclick="goTo(1)"><span class="fill"></span></button>
+        <button class="dot" role="tab" aria-selected="false" aria-label="Slide 3" onclick="goTo(2)"><span class="fill"></span></button>
+        <button class="dot" role="tab" aria-selected="false" aria-label="Slide 4" onclick="goTo(3)"><span class="fill"></span></button>
+      </div>
+      <div class="arrows">
+        <button class="arrow" aria-label="Previous slide" onclick="prev()">‹</button>
+        <button class="arrow" aria-label="Next slide" onclick="next()">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="band" aria-hidden="true"></div>
+
+<div class="stats" aria-label="PUSEWU at a glance">
+  <div class="wrap">
+    <div class="stat"><b data-count="10000">0</b><span>members targeted year one</span></div>
+    <div class="stat"><b>K150</b><span>monthly PMEC deduction (F396)</span></div>
+    <div class="stat"><b>K20</b><span>saved to your retirement monthly</span></div>
+    <div class="stat"><b>K2,000</b><span>funeral grant for members</span></div>
+  </div>
+</div>
+
+<section class="benefits" id="benefits">
+  <div class="wrap">
+    <div class="sec-head" id="philosophy">
+      <span class="eyebrow">Why PUSEWU</span>
+      <h2>Membership that pays you back — in protection, savings and support.</h2>
+      <p>Our philosophy puts workers' interests above all else. These are the benefits every paid-up member holds.</p>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c0-3.5 3.6-5.5 8-5.5s8 2 8 5.5"/></svg></div>
+        <h3>Member Portal Access</h3>
+        <p>Join online, update your details and view your membership and benefit status securely — from any phone.</p>
+      </div>
+      <div class="card">
+        <span class="tag">K20 / month</span>
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>Retirement Savings Scheme</h3>
+        <p>K20 of every deduction is saved in your name, matures after 36 months, and is paid out on retirement.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14M4 19h16M9 8h6M9 12h6"/></svg></div>
+        <h3>Financial Literacy Training</h3>
+        <p>Budgeting, saving, investing and pre-retirement preparation — free sessions for members, online and in person.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h18M3 12l4-4M3 12l4 4M21 6H11M21 18H11"/></svg></div>
+        <h3>Soft Loan Facility</h3>
+        <p>Apply online for reduced-rate loans through our partner financial institution, and track your application.</p>
+      </div>
+      <div class="card">
+        <span class="tag">K2,000</span>
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.6-9.5-9C.9 8.4 2.9 4.5 6.5 4.5c2 0 3.6 1.1 5.5 3 1.9-1.9 3.5-3 5.5-3 3.6 0 5.6 3.9 4 7.5C19 16.4 12 21 12 21z"/></svg></div>
+        <h3>Welfare Benefits</h3>
+        <p>A K2,000 funeral grant with a simple online claim — support for your family when it matters most.</p>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v12H7l-3 3V4z"/><path d="M8 9h8M8 12h5"/></svg></div>
+        <h3>Prompt Communications</h3>
+        <p>Official statements, meeting and event notices, dispute resolutions — delivered to your app, SMS and email.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="join" id="join">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">How to join</span>
+      <h2>Apply and sign online. Your salary does the rest.</h2>
+      <p>No cash. No mobile money. Your subscription is a clean payroll deduction handled through PMEC.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Apply &amp; sign online</h3><p>Complete the digital consent form and sign it with your finger, verified by an SMS code. Legally valid under the ECT Act, 2021.</p></div>
+      <div class="step"><h3>PUSEWU approves</h3><p>An officer verifies your eligibility — typically within 24–48 hours — and issues your membership number and digital card.</p></div>
+      <div class="step"><h3>PMEC deducts K150</h3><p>We submit your details to PMEC under deduction code F396. K150 comes off your payroll monthly — nothing for you to do.</p></div>
+      <div class="step"><h3>You track everything</h3><p>Your dashboard shows your deduction history, your growing K20-a-month retirement savings, and any case you lodge.</p></div>
+    </div>
+    <p class="pmec-note"><b>Already in another union?</b> Tell us during sign-up. We generate your withdrawal notice under Cap 269 (s.5(f) &amp; s.22(2)), notify District HR and PMEC, and switch your deduction to PUSEWU — no double deductions.</p>
+    <div class="interest" id="interest">
+      <div>
+        <h3>Ready to join? Apply online now.</h3>
+        <p>Complete the digital membership application with electronic signature. Already a member? Log in to your portal to track savings and cases.</p>
+      </div>
+      <div class="interest-actions">
+        <a class="btn gold" href="app/apply.html">Start your application</a>
+        <span class="alt"><a href="app/login.html" style="color:#9EC6C3">or log in to the member portal →</a></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cases" id="cases">
+  <div class="wrap split">
+    <div>
+      <span class="eyebrow">Learn from every victory</span>
+      <h2>A library of resolved cases — <em>so you know how to approach yours.</em></h2>
+      <p>Paid-up members can study how PUSEWU resolved past salary disputes, unfair dismissals and disciplinary matters. Lodge your own issue and follow its status from Received to Resolved.</p>
+      <a class="btn gold" href="app/login.html">Log in to access</a>
+    </div>
+    <div>
+      <div class="case-card">
+        <div class="meta"><span>Salary dispute</span><span class="status">Resolved</span></div>
+        <h3>Unimplemented salary circular — Ministry of Health</h3>
+        <p>Escalated with payslip evidence; arrears recovered for affected members within 60 days.</p>
+      </div>
+      <div class="case-card">
+        <div class="meta"><span>Unfair dismissal</span><span class="status">Resolved</span></div>
+        <h3>Termination without hearing — provincial office</h3>
+        <p>Reinstatement secured citing procedural breach under Cap 269 disciplinary provisions.</p>
+      </div>
+      <div class="case-card">
+        <div class="meta"><span>Deduction error</span><span class="status">Resolved</span></div>
+        <h3>Wrongful third-party payroll deduction</h3>
+        <p>District HR notified; PMEC corrected the deduction and refunded the member.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="news" id="news">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">News &amp; notices</span>
+      <h2>The latest from your union.</h2>
+    </div>
+    <div class="grid3">
+      <div class="card"><span class="date">Notice</span><h3>2026 Annual General Meeting — delegate registration opens</h3><p>Branch delegates should confirm attendance through their district representatives.</p></div>
+      <div class="card"><span class="date">Statement</span><h3>Update on conditions-of-service negotiations</h3><p>PUSEWU continues engagement with Government on allowances and housing provisions.</p></div>
+      <div class="card"><span class="date">Training</span><h3>Pre-retirement financial literacy workshop — Lusaka</h3><p>Open to all paid-up members. Places limited; RSVP through the member portal.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site" id="contact">
+  <div class="cols">
+    <div>
+      <div class="brandline">
+        <img src="img/pusewu-logo.png" alt="PUSEWU seal">
+        <div><strong style="color:#fff;font-family:var(--disp)">PUSEWU</strong><br><small>Public Service Workers Union</small></div>
+      </div>
+      <p>Advocating for workers' rights and interests across every ministry in Zambia. Membership is voluntary and protected by the Industrial and Labour Relations Act, Cap 269.</p>
+    </div>
+    <div>
+      <h4>Quick links</h4>
+      <ul>
+        <li><a href="#philosophy">Our Philosophy</a></li>
+        <li><a href="#benefits">Member Benefits</a></li>
+        <li><a href="app/apply.html">Join PUSEWU</a></li>
+        <li><a href="app/login.html">Member Login</a></li>
+        <li><a href="#cases">Case Library</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact us</h4>
+      <ul>
+        <li>info@pusewu.org.zm</li>
+        <li>membership@pusewu.org.zm</li>
+        <li>grievances@pusewu.org.zm</li>
+        <li>www.pusewu.org.zm</li>
+      </ul>
+    </div>
+  </div>
+  <div class="legal"><b>Workers First</b> · Solidarity in Action, Empowered We Rise · © 2026 Public Service Workers Union (PUSEWU)</div>
+</footer>
+
+<script src="js/main.js" defer></script>
+</body>
+</html>

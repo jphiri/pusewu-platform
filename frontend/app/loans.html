@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soft Loans — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>Soft Loan Facility</h1><p>Apply for a reduced-rate loan through our partner financial institution, and track your application here.</p></div>
+      <div class="panel">
+        <h2>Apply for a loan</h2>
+        <div class="form-grid">
+          <div class="form-row"><label for="amt">Amount (ZMW)</label><input id="amt" type="number" min="500" step="500" placeholder="e.g. 5000"></div>
+          <div class="form-row"><label for="term">Repayment term</label><select id="term"><option>6 months</option><option>12 months</option><option>18 months</option><option>24 months</option></select></div>
+        </div>
+        <div class="form-row"><label for="purpose">Purpose <span class="hint">(optional)</span></label><input id="purpose" placeholder="e.g. school fees, home improvement"></div>
+        <button class="btn teal" id="applyBtn" onclick="apply()">Submit application</button>
+        <p class="err" id="err"></p>
+      </div>
+      <div id="list"></div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){ if(!PUSEWU.requireMember())return; PUSEWU.renderChrome('loans'); await render(); })();
+async function apply(){
+  const amt=parseInt(document.getElementById('amt').value||'0',10);
+  const err=document.getElementById('err'); err.classList.remove('show');
+  if(!amt||amt<500){ err.textContent='Enter an amount of at least K500.'; err.classList.add('show'); return; }
+  const btn=document.getElementById('applyBtn'); btn.disabled=true; btn.textContent='Submitting…';
+  try{ await PUSEWU.applyLoan(amt,document.getElementById('term').value,document.getElementById('purpose').value.trim()); document.getElementById('amt').value=''; await render(); }
+  catch(e){ err.textContent=e.message; err.classList.add('show'); }
+  finally{ btn.disabled=false; btn.textContent='Submit application'; }
+}
+async function render(){
+  try{ const r=await PUSEWU.myLoans(); const ls=r.loans||[];
+    document.getElementById('list').innerHTML=ls.length?
+      '<div class="panel"><h2>My loan applications</h2><table class="data"><thead><tr><th>Ref</th><th>Amount</th><th>Applied</th><th>Status</th></tr></thead><tbody>'+
+      ls.map(l=>`<tr><td><b>${l.ref}</b></td><td>${PUSEWU.money(l.amount)}</td><td>${(l.applied_on||'').slice(0,10)}</td><td><span class="pill warn dot">${l.status}</span></td></tr>`).join('')+'</tbody></table></div>':'';
+  }catch(e){ PUSEWU.showError(document.getElementById('list'),e); }
+}
+</script>
+</body>
+</html>

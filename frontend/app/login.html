@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — PUSEWU Portal</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<div class="auth">
+  <div class="brandside">
+    <img src="../img/pusewu-logo.png" alt="PUSEWU seal">
+    <h1>Welcome to your <em>PUSEWU portal.</em></h1>
+    <p>One secure portal for members, officers, finance, branch representatives, administrators and the executive.</p>
+    <ul class="points">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Members: savings, subscription, cases, benefits</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Officers &amp; branches: approvals and case handling</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Finance &amp; executive: deduction settings and oversight</li>
+    </ul>
+  </div>
+  <div class="formside">
+    <div class="formcard">
+      <a href="../index.html" style="text-decoration:none;color:var(--mute);font-size:.85rem">← Back to website</a>
+      <div style="height:1rem"></div>
+      <h2>Sign in</h2>
+      <p class="muted">Enter the email and password for your PUSEWU account.</p>
+      <div class="form-row">
+        <label for="email">Email address</label>
+        <input id="email" type="email" autocomplete="username" placeholder="you@pusewu.org.zm">
+      </div>
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="Your password">
+      </div>
+      <p class="err" id="loginErr"></p>
+      <button class="btn teal block" id="signBtn" onclick="doLogin()">Sign in</button>
+      <div style="text-align:center;margin-top:1rem;font-size:.9rem">
+        Not a member yet? <a href="apply.html">Apply online →</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+<script>
+async function doLogin(){
+  const email=document.getElementById('email').value.trim();
+  const pw=document.getElementById('password').value;
+  const err=document.getElementById('loginErr');
+  const btn=document.getElementById('signBtn');
+  err.classList.remove('show');
+  btn.disabled=true; btn.textContent='Signing in…';
+  try{
+    const r=await PUSEWU.login(email,pw);
+    location.href=r.home;
+  }catch(e){
+    err.textContent=e.message; err.classList.add('show');
+    btn.disabled=false; btn.textContent='Sign in';
+  }
+}
+document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>

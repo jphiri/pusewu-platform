@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training & Events — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>Training &amp; Events</h1><p>Financial literacy and pre-retirement training — free for members. Reserve your place.</p></div>
+      <div id="list" class="grid-2"></div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){ if(!PUSEWU.requireMember())return; PUSEWU.renderChrome('training'); await render(); })();
+async function render(){
+  try{ const r=await PUSEWU.trainings(); const ts=r.trainings||[];
+    document.getElementById('list').innerHTML=ts.map(t=>
+      `<div class="panel"><span class="pill info">${t.place||''}</span>
+       <h2 style="margin:.6rem 0 .2rem">${t.title}</h2>
+       <p class="sub" style="color:var(--mute)">${(t.event_date||'').slice(0,10)}</p>
+       <div style="margin-top:.8rem">${t.rsvped?'<span class="pill ok dot">Reserved</span>':`<button class="btn teal sm" onclick="book('${t.id}')">Reserve my place</button>`}</div></div>`).join('') || '<div class="panel"><p class="sub" style="color:var(--mute)">No upcoming events.</p></div>';
+  }catch(e){ PUSEWU.showError(document.getElementById('list'),e); }
+}
+async function book(id){ try{ await PUSEWU.rsvp(id); await render(); }catch(e){ alert(e.message); } }
+</script>
+</body>
+</html>

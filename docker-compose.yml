@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: pusewu-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pusewu
+      POSTGRES_PASSWORD: ${PGPASSWORD:-pusewu_dev_password}
+      POSTGRES_DB: pusewu
+    ports:
+      - "5432:5432"
+    volumes:
+      - pusewu_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pusewu -d pusewu"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: pusewu-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgres://pusewu:${PGPASSWORD:-pusewu_dev_password}@db:5432/pusewu
+      PGSSL: "false"
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4000}
+      JWT_SECRET: ${JWT_SECRET:-please_change_this_to_a_long_random_secret}
+      JWT_EXPIRES_IN: 8h
+      BCRYPT_ROUNDS: "12"
+      FRONTEND_DIR: /app/frontend
+      # Initial admin (first run only). Change the password after logging in.
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@pusewu.org.zm}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_FIRST_NAME: ${ADMIN_FIRST_NAME:-System}
+      ADMIN_SURNAME: ${ADMIN_SURNAME:-Administrator}
+    ports:
+      - "4000:4000"
+    command: sh -c "node scripts/migrate.js && node scripts/seed.js && node src/server.js"
+
+volumes:
+  pusewu_pgdata:

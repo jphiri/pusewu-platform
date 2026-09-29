@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Library — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>Case Resolution Library</h1><p>Learn from how PUSEWU resolved past cases (anonymised), so you know how to approach your own issue.</p></div>
+      <div class="form-row" style="max-width:340px"><label for="filter">Filter by type</label>
+        <select id="filter" onchange="render()"><option value="">All types</option></select></div>
+      <div id="lib"></div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+let _lib=[];
+(async function(){
+  const u=PUSEWU.requireRole('member','officer','finance','rep','admin','exec'); if(!u) return;
+  PUSEWU.renderChrome(u.role==='member'?'library':'');
+  try{
+    const r=await PUSEWU.caseLibrary(); _lib=r.library||[];
+    const types=[...new Set(_lib.map(c=>c.type))];
+    const sel=document.getElementById('filter');
+    types.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});
+    render();
+  }catch(e){ PUSEWU.showError(document.getElementById('lib'),e); }
+})();
+function render(){
+  const f=document.getElementById('filter').value;
+  const lib=_lib.filter(c=>!f||c.type===f);
+  document.getElementById('lib').innerHTML=lib.map(c=>
+    `<div class="panel"><div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem">
+       <span class="pill info">${c.type}</span><span class="pill ok">${c.outcome}</span><span class="pill" style="background:var(--mist);color:var(--teal)">${c.ministry||''}</span></div>
+       <h2 style="margin-bottom:.3rem">${c.title}</h2>
+       <p style="font-size:.9rem;margin-bottom:.7rem">${c.summary||''}</p>
+       <p style="font-size:.85rem;color:var(--mute);margin-bottom:.5rem"><b>Legal / policy basis:</b> ${c.basis||''}</p>
+       <div class="notice ok" style="margin:0"><b>What you can learn:</b> ${c.lesson||''}</div></div>`).join('') || '<div class="panel"><p class="sub" style="color:var(--mute)">No cases in the library yet.</p></div>';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Users & Roles — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>Users &amp; Roles</h1><p>Create accounts and assign roles. Each role sees only what its permissions allow.</p></div>
+      <div class="panel"><h2>Add a user</h2>
+        <div class="form-grid">
+          <div class="form-row"><label>First name</label><input id="fn"></div>
+          <div class="form-row"><label>Surname</label><input id="sn"></div>
+          <div class="form-row"><label>Email</label><input id="em" type="email"></div>
+          <div class="form-row"><label>Temporary password</label><input id="pw" type="text"></div>
+          <div class="form-row"><label>Role</label><select id="rl"><option value="member">Member</option><option value="officer">Membership Officer</option><option value="finance">Finance Officer</option><option value="rep">Branch Representative</option><option value="admin">System Administrator</option><option value="exec">Executive</option></select></div>
+          <div class="form-row"><label>Branch <span class="hint">(for branch reps)</span></label><input id="br" placeholder="e.g. Lusaka Provincial"></div>
+        </div>
+        <button class="btn teal" id="addBtn" onclick="add()">Create user</button>
+        <span id="msg" class="pill" style="display:none;margin-left:.8rem"></span>
+      </div>
+      <div class="panel"><h2>All users</h2>
+        <table class="data"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Change role</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+const ROLES=PUSEWU.ROLES;
+(async function(){ if(!PUSEWU.requireRole('admin'))return; PUSEWU.renderChrome('users'); await render(); })();
+async function render(){
+  const wrap=document.getElementById('rows');
+  try{
+    const r=await PUSEWU.listUsers(); const me=PUSEWU.getUser();
+    wrap.innerHTML=(r.users||[]).map(u=>{
+      const opts=Object.keys(ROLES).map(x=>`<option value="${x}" ${u.role===x?'selected':''}>${ROLES[x].label}</option>`).join('');
+      const isSelf=me&&me.id===u.id;
+      return `<tr><td>${u.first_name} ${u.surname}</td><td>${u.email}</td>
+        <td><span class="pill info">${(ROLES[u.role]||{}).label||u.role}</span></td>
+        <td><select onchange="chg('${u.id}',this.value)" ${isSelf?'disabled':''}>${opts}</select></td>
+        <td>${isSelf?'<span class="hint">you</span>':`<button class="btn outline sm" style="border-color:var(--danger);color:var(--danger)" onclick="rm('${u.id}')">Remove</button>`}</td></tr>`;
+    }).join('');
+  }catch(e){ PUSEWU.showError(wrap,e); }
+}
+async function add(){
+  const msg=document.getElementById('msg'); msg.style.display='none';
+  const btn=document.getElementById('addBtn'); btn.disabled=true; btn.textContent='Creating…';
+  try{
+    await PUSEWU.addUser({ firstName:val('fn'), surname:val('sn'), email:val('em'), password:val('pw'), role:document.getElementById('rl').value, branch:val('br') });
+    ['fn','sn','em','pw','br'].forEach(id=>document.getElementById(id).value='');
+    msg.className='pill ok'; msg.textContent='User created'; msg.style.display='inline-block'; setTimeout(()=>msg.style.display='none',2000);
+    await render();
+  }catch(e){ msg.className='pill danger'; msg.textContent=e.message; msg.style.display='inline-block'; }
+  finally{ btn.disabled=false; btn.textContent='Create user'; }
+}
+function val(k){ return document.getElementById(k).value.trim(); }
+async function chg(id,role){ try{ await PUSEWU.setUserRole(id,role); await render(); }catch(e){ alert(e.message); } }
+async function rm(id){ if(!confirm('Remove this user?'))return; try{ await PUSEWU.removeUser(id); await render(); }catch(e){ alert(e.message); } }
+</script>
+</body>
+</html>

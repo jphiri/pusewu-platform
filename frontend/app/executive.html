@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Oversight — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>Executive Oversight</h1><p>A read-only view of the union's membership across all branches.</p></div>
+      <div class="grid-3">
+        <div class="tile accent"><div class="label">Total paid-up</div><div class="big" id="kPaid">—</div><div class="sub">members deducted this month</div></div>
+        <div class="tile"><div class="label">At-risk</div><div class="big" id="kRisk" style="color:var(--warn)">—</div><div class="sub">missed a deduction</div></div>
+        <div class="tile"><div class="label">Lost</div><div class="big" id="kLost" style="color:var(--danger)">—</div><div class="sub">deduction stopped</div></div>
+      </div>
+      <div class="panel"><h2>Membership by ministry</h2>
+        <table class="data"><thead><tr><th>Ministry</th><th>Paid-up</th><th>At-risk</th><th>Lost</th><th>Health</th></tr></thead><tbody id="rows"></tbody></table>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){
+  if(!PUSEWU.requireRole('exec','admin'))return; PUSEWU.renderChrome('executive');
+  try{
+    const r=await PUSEWU.executive();
+    const t=r.totals||{paid:0,at_risk:0,lost:0};
+    document.getElementById('kPaid').textContent=(t.paid||0).toLocaleString();
+    document.getElementById('kRisk').textContent=t.at_risk||0;
+    document.getElementById('kLost').textContent=t.lost||0;
+    const health=x=>{const tot=x.paid+x.at_risk+x.lost;const p=tot?x.paid/tot:0;return p>0.95?'<span class="pill ok dot">Strong</span>':p>0.9?'<span class="pill warn dot">Watch</span>':'<span class="pill danger dot">Action</span>';};
+    document.getElementById('rows').innerHTML=(r.byMinistry||[]).map(x=>`<tr><td>${x.ministry}</td><td>${x.paid}</td><td>${x.at_risk}</td><td>${x.lost}</td><td>${health(x)}</td></tr>`).join('') || '<tr><td colspan="5" style="color:var(--mute)">No membership data yet.</td></tr>';
+  }catch(e){ PUSEWU.showError(document.getElementById('rows').parentElement,e); }
+})();
+</script>
+</body>
+</html>

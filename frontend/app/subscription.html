@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Subscription — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>My Subscription</h1><p>Your union subscription is a percentage of your basic pay, collected as a payroll deduction through PMEC — never by cash or mobile money.</p></div>
+      <div id="cfgNotice"></div>
+      <div class="grid-3">
+        <div class="tile"><div class="label">Deduction rate</div><div class="big" id="rate">—</div><div class="sub">of your basic pay · code <span id="code">—</span></div></div>
+        <div class="tile"><div class="label">Your monthly deduction</div><div class="big" id="gross">—</div><div class="sub" id="basicSub">on your basic pay</div></div>
+        <div class="tile"><div class="label">Status</div><div class="big" id="stat">—</div><div class="sub" id="statSub"></div></div>
+      </div>
+      <div class="panel"><h2>How your deduction is used</h2>
+        <table class="data"><thead><tr><th>Allocation</th><th>Amount</th><th>Purpose</th></tr></thead><tbody id="alloc"></tbody></table>
+        <p class="hint" style="margin-top:.6rem">The rate and split are set by the union's Finance Office. Because it is a percentage, members on different basic pay contribute proportionally.</p>
+      </div>
+      <div class="panel"><h2>Deduction history</h2><div id="hist"></div></div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){
+  if(!PUSEWU.requireMember()) return;
+  PUSEWU.renderChrome('subscription');
+  try{
+    const d=await PUSEWU.myDashboard();
+    PUSEWU.setCurrency(d.settings.currency);
+    const m=d.member, dd=d.deduction, st=d.settings;
+    document.getElementById('code').textContent=st.deductionCode||'F396';
+    if(!st.configured || st.deductionRate==null){
+      document.getElementById('cfgNotice').innerHTML='<div class="notice info">Your exact subscription is being finalised by the union\u2019s Finance Office. Figures show once the rate is set.</div>';
+    }
+    document.getElementById('rate').textContent = st.deductionRate!=null?PUSEWU.pct(st.deductionRate):'—';
+    document.getElementById('gross').textContent = dd.gross!=null?PUSEWU.money(dd.gross):'—';
+    document.getElementById('basicSub').textContent = m.basicPay?('on basic pay of '+PUSEWU.money(m.basicPay)):'basic pay not on file';
+    const map={paid:['Paid-up','ok'],'at-risk':['At-risk','warn'],pending:['Pending','info'],lost:['Lost','danger'],rejected:['Not approved','danger']};
+    const sp=map[m.status]||['—','info'];
+    document.getElementById('stat').innerHTML='<span class="pill '+sp[1]+' dot">'+sp[0]+'</span>';
+    document.getElementById('statSub').textContent = m.status==='paid'?'Deducted this month':m.status==='pending'?'Awaiting approval':'Check with District HR';
+    const alloc=document.getElementById('alloc');
+    if(dd.gross!=null){
+      alloc.innerHTML=`<tr><td>Retirement Savings Scheme</td><td><b style="color:var(--ok)">${PUSEWU.money(dd.retirement)}</b></td><td>Saved in your name; paid on retirement</td></tr>
+        <tr><td>Union operations, representation &amp; benefits</td><td>${PUSEWU.money(dd.union)}</td><td>Advocacy, welfare, legal support, running costs</td></tr>
+        <tr><td><b>Total via PMEC (${st.deductionCode||'F396'})</b></td><td><b>${PUSEWU.money(dd.gross)}</b></td><td>${PUSEWU.pct(st.deductionRate)} of your basic pay, deducted monthly</td></tr>`;
+    } else { alloc.innerHTML='<tr><td colspan="3" style="color:var(--mute)">Awaiting Finance configuration of the deduction rate.</td></tr>'; }
+    const rows=(d.savings.history||[]).slice().reverse().map(h=>{
+      const period=new Date(h.period).toLocaleString('en',{month:'short',year:'numeric'});
+      return `<tr><td>${period}</td><td>${h.period}</td><td>${h.paid?'<span class="pill ok">Deducted</span>':'<span class="pill danger">Missed</span>'}</td><td>${h.paid?PUSEWU.money(h.amount):'—'}</td><td>${h.paid?('<b style="color:var(--ok)">'+PUSEWU.money(h.retirement)+'</b>'):'—'}</td></tr>`;}).join('');
+    document.getElementById('hist').innerHTML=(d.savings.history&&d.savings.history.length)?
+      `<table class="data"><thead><tr><th>Month</th><th>Date</th><th>Result</th><th>Deduction</th><th>To retirement</th></tr></thead><tbody>${rows}</tbody></table>`
+      :'<p class="sub" style="color:var(--mute)">No deductions yet — these begin once your application is approved and submitted to PMEC.</p>';
+  }catch(e){ PUSEWU.showError(document.getElementById('hist'),e); }
+})();
+</script>
+</body>
+</html>

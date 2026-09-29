@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page-head"><h1>Finance Office</h1><p>Set the subscription deduction, manage the retirement split, and reconcile PMEC reports.</p></div>
+    <div id="notConfigured"></div>
+    <div class="panel" id="settings">
+      <h2>Subscription deduction settings</h2>
+      <p style="font-size:.9rem;color:var(--mute);margin-bottom:1rem">The subscription is a percentage of each member's <b>basic pay</b>, so members on different salaries pay proportionally. Set the rate and how much of it goes to the Retirement Savings Scheme.</p>
+      <div class="form-grid">
+        <div class="form-row"><label for="rate">Deduction rate — % of basic pay</label><input id="rate" type="number" step="0.05" min="0" max="100" placeholder="e.g. 1.0"><p class="hint">Applied to each member's monthly basic pay.</p></div>
+        <div class="form-row"><label for="code">PMEC deduction code</label><input id="code" value="F396"></div>
+      </div>
+      <h2 class="mt" style="margin-top:1rem">Retirement Savings split</h2>
+      <div class="form-grid">
+        <div class="form-row"><label for="retMode">How the retirement portion is set</label>
+          <select id="retMode" onchange="onModeChange()"><option value="percent">A percentage of the deduction</option><option value="fixed">A fixed amount each month</option></select></div>
+        <div class="form-row"><label for="retVal" id="retLabel">Retirement share — % of the deduction</label><input id="retVal" type="number" step="1" min="0" placeholder="e.g. 25"><p class="hint" id="retHint">The rest funds union operations and benefits.</p></div>
+      </div>
+      <button class="btn teal" id="saveBtn" onclick="saveCfg()">Save settings</button>
+      <span id="saved" class="pill ok" style="display:none;margin-left:.8rem">Settings saved</span>
+      <p class="err" id="err"></p>
+    </div>
+    <div class="panel"><h2>Live preview</h2>
+      <p style="font-size:.9rem;color:var(--mute);margin-bottom:.8rem">See what the current settings produce for three example basic pays.</p>
+      <table class="data"><thead><tr><th>Example basic pay</th><th>Total deduction</th><th>→ Retirement</th><th>→ Union operations</th></tr></thead><tbody id="preview"></tbody></table>
+    </div>
+    <div class="panel" id="pmec"><h2>PMEC reconciliation — by ministry</h2>
+      <p style="font-size:.9rem;color:var(--mute);margin-bottom:.8rem">Members deducted last month but not this month are flagged automatically once the monthly PMEC report is imported.</p>
+      <table class="data"><thead><tr><th>Ministry</th><th>Paid-up</th><th>At-risk</th><th>Lost</th></tr></thead><tbody id="pmecRows"></tbody></table>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){ if(!PUSEWU.requireRole('finance'))return; PUSEWU.renderChrome('finance'); await loadCfg(); await renderPmec(); })();
+async function loadCfg(){
+  try{
+    const r=await PUSEWU.getSettings(); const s=r.settings;
+    if(s.deduction_rate!=null)document.getElementById('rate').value=s.deduction_rate;
+    document.getElementById('code').value=s.deduction_code||'F396';
+    document.getElementById('retMode').value=s.retirement_mode||'percent';
+    if(s.retirement_share!=null)document.getElementById('retVal').value=s.retirement_share;
+    onModeChange(true);
+    document.getElementById('notConfigured').innerHTML=s.configured?'':'<div class="notice warn"><b>Action needed:</b> the subscription rate has not been configured yet. Members currently see "pending configuration". Set the rate below to activate it.</div>';
+    renderPreview();
+  }catch(e){ PUSEWU.showError(document.getElementById('notConfigured'),e); }
+}
+function onModeChange(skip){
+  const mode=document.getElementById('retMode').value;
+  document.getElementById('retLabel').textContent=mode==='fixed'?'Fixed retirement amount (per month)':'Retirement share — % of the deduction';
+  document.getElementById('retHint').textContent=mode==='fixed'?'A flat amount saved each month regardless of salary.':'The rest funds union operations and benefits.';
+  if(!skip)renderPreview();
+}
+async function saveCfg(){
+  const err=document.getElementById('err'); err.classList.remove('show');
+  const rate=parseFloat(document.getElementById('rate').value);
+  if(isNaN(rate)||rate<=0){ err.textContent='Enter a deduction rate greater than 0.'; err.classList.add('show'); return; }
+  const retVal=parseFloat(document.getElementById('retVal').value);
+  if(isNaN(retVal)||retVal<0){ err.textContent='Enter a valid retirement value.'; err.classList.add('show'); return; }
+  const btn=document.getElementById('saveBtn'); btn.disabled=true; btn.textContent='Saving…';
+  try{
+    await PUSEWU.saveSettings({ deductionRate:rate, retirementMode:document.getElementById('retMode').value, retirementShare:retVal, deductionCode:document.getElementById('code').value.trim()||'F396' });
+    const s=document.getElementById('saved'); s.style.display='inline-block'; setTimeout(()=>s.style.display='none',1600);
+    await loadCfg();
+  }catch(e){ err.textContent=e.message; err.classList.add('show'); }
+  finally{ btn.disabled=false; btn.textContent='Save settings'; }
+}
+function renderPreview(){
+  const rate=parseFloat(document.getElementById('rate').value);
+  const retMode=document.getElementById('retMode').value;
+  const retVal=parseFloat(document.getElementById('retVal').value);
+  const tbody=document.getElementById('preview');
+  if(isNaN(rate)||rate<=0){ tbody.innerHTML='<tr><td colspan="4" style="color:var(--mute)">Enter a deduction rate to preview.</td></tr>'; return; }
+  tbody.innerHTML=[6000,9500,14000].map(bp=>{
+    const gross=bp*rate/100; const ret=retMode==='fixed'?(retVal||0):gross*(retVal||0)/100; const union=gross-ret;
+    return `<tr><td>K${bp.toLocaleString()}</td><td><b>K${gross.toFixed(2)}</b></td><td style="color:var(--ok)">K${ret.toFixed(2)}</td><td>K${union.toFixed(2)}</td></tr>`;
+  }).join('');
+}
+['rate','retVal','retMode'].forEach(id=>document.getElementById(id).addEventListener('input',renderPreview));
+async function renderPmec(){
+  try{ const r=await PUSEWU.pmec(); const rows=r.ministries||[];
+    document.getElementById('pmecRows').innerHTML=rows.length?rows.map(x=>`<tr><td>${x.ministry}</td><td>${x.paid}</td><td><span class="pill warn">${x.at_risk}</span></td><td><span class="pill danger">${x.lost}</span></td></tr>`).join(''):'<tr><td colspan="4" style="color:var(--mute)">No member data yet.</td></tr>';
+  }catch(e){ PUSEWU.showError(document.getElementById('pmecRows').parentElement,e); }
+}
+</script>
+</body>
+</html>

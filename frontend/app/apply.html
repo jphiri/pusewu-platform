@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join PUSEWU — Membership Application</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header">
+  <div class="bar">
+    <a class="brand" href="../index.html" style="text-decoration:none">
+      <img src="../img/pusewu-logo.png" alt="PUSEWU" style="width:42px;background:#fff;border-radius:50%;padding:3px">
+      <span class="name" style="color:#fff">PUSEWU<small style="color:#9FD0CD">Membership Application</small></span>
+    </a>
+    <div class="spacer"></div>
+    <a class="linkbtn" href="login.html">Already a member? Log in</a>
+  </div>
+</header>
+
+<div class="app-main" style="max-width:820px;margin:0 auto">
+  <div class="page-head" style="margin:1.4rem 0">
+    <h1>Join the Public Service Workers Union</h1>
+    <p>Apply and sign online in a few minutes. Your subscription is a payroll deduction through PMEC (code F396) — no cash or mobile money.</p>
+  </div>
+
+  <div class="wizard-steps" id="wsteps">
+    <div class="ws active" data-s="0">Eligibility</div>
+    <div class="ws" data-s="1">Your details</div>
+    <div class="ws" data-s="2">Consent</div>
+    <div class="ws" data-s="3">Sign</div>
+    <div class="ws" data-s="4">Done</div>
+  </div>
+
+  <!-- STEP 0 -->
+  <div class="panel wizard-pane active" data-pane="0">
+    <h2>Step 1 — Eligibility</h2>
+    <div class="form-row">
+      <label for="ministry">Your ministry / employer</label>
+      <select id="ministry">
+        <option value="">Select…</option>
+        <option>Ministry of Health</option><option>Ministry of Education</option>
+        <option>Ministry of Home Affairs</option><option>Ministry of Local Government</option>
+        <option>Ministry of Agriculture</option><option>Ministry of Finance</option>
+        <option>Provincial Administration</option><option>Other public service</option>
+      </select>
+      <p class="err" id="e_ministry">Please select your ministry.</p>
+    </div>
+    <div class="check"><input type="checkbox" id="isPublic"><label for="isPublic">I confirm I am a public service employee eligible to join PUSEWU.</label></div>
+    <p class="err" id="e_isPublic">You must confirm eligibility to continue.</p>
+
+    <div class="notice info" style="margin-top:1rem">
+      <b>Already in another union?</b>
+      <div class="check" style="margin-top:.5rem"><input type="checkbox" id="switching"><label for="switching">Yes — I want to switch to PUSEWU. Prepare my withdrawal notice under Cap 269 and notify District HR / PMEC.</label></div>
+    </div>
+    <div class="wizard-actions"><span></span><button class="btn teal" onclick="next(0)">Continue</button></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="panel wizard-pane" data-pane="1">
+    <h2>Step 2 — Your details</h2>
+    <div class="form-grid">
+      <div class="form-row"><label for="firstName">First name</label><input id="firstName"><p class="err" id="e_firstName">Required.</p></div>
+      <div class="form-row"><label for="surname">Surname</label><input id="surname"><p class="err" id="e_surname">Required.</p></div>
+      <div class="form-row"><label for="nrc">NRC number</label><input id="nrc" placeholder="e.g. 123456/78/1"><p class="err" id="e_nrc">Enter a valid NRC.</p></div>
+      <div class="form-row"><label for="phone">Phone number</label><input id="phone" placeholder="+260…"><p class="err" id="e_phone">Required.</p></div>
+      <div class="form-row"><label for="email">Email <span class="hint">(used for your login)</span></label><input id="email" type="email"><p class="err" id="e_email">Enter a valid email.</p></div>
+      <div class="form-row"><label for="employeeNo">Employee / payroll number</label><input id="employeeNo" placeholder="PS-…"><p class="err" id="e_employeeNo">Required.</p></div>
+      <div class="form-row"><label for="jobTitle">Job title</label><input id="jobTitle"><p class="err" id="e_jobTitle">Required.</p></div>
+      <div class="form-row"><label for="basicPay">Monthly basic pay (ZMW) <span class="hint">(used to calculate your subscription)</span></label><input id="basicPay" type="number" min="0" step="100" placeholder="e.g. 9500"><p class="err" id="e_basicPay">Enter your basic pay.</p></div>
+      <div class="form-row"><label for="station">Station / school / hospital</label><input id="station"></div>
+    </div>
+    <div class="form-row"><label for="password">Choose a password <span class="hint">(for your member portal)</span></label><input id="password" type="password"><p class="err" id="e_password">Use at least 6 characters.</p></div>
+    <div id="priorWrap" style="display:none">
+      <div class="form-row"><label for="priorUnion">Name of your current union <span class="hint">(for the withdrawal notice)</span></label><input id="priorUnion"></div>
+    </div>
+    <div class="wizard-actions"><button class="btn outline" onclick="back(1)">Back</button><button class="btn teal" onclick="next(1)">Continue</button></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="panel wizard-pane" data-pane="2">
+    <h2>Step 3 — Declaration &amp; consent</h2>
+    <p style="font-size:.9rem;color:var(--mute);margin-bottom:1rem">This mirrors the official PUSEWU Membership Consent Form. Please read and accept each item.</p>
+    <div class="check"><input type="checkbox" id="c1"><label for="c1">I hereby apply to become a member of the Public Service Workers Union (PUSEWU). I acknowledge that membership is voluntary and that I may withdraw at any time in accordance with the union's constitution and Cap 269.</label></div>
+    <div class="check"><input type="checkbox" id="c2"><label for="c2">I authorise PUSEWU to represent me in employment-related matters, including negotiations, collective bargaining and dispute resolution.</label></div>
+    <div class="check"><input type="checkbox" id="c3"><label for="c3">I consent to a monthly subscription calculated as a percentage of my basic pay, collected by payroll deduction through PMEC under the union's deduction code, of which a portion is credited to my Retirement Savings Scheme. <span id="rateLine" style="color:var(--teal-deep);font-weight:600"></span></label></div>
+    <div class="check"><input type="checkbox" id="c4"><label for="c4">I understand my personal information will be kept confidential and used solely for union purposes, in line with the Data Protection Act, 2021.</label></div>
+    <p class="err" id="e_consent">Please accept all four items to continue.</p>
+    <div class="wizard-actions"><button class="btn outline" onclick="back(2)">Back</button><button class="btn teal" onclick="next(2)">Continue</button></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="panel wizard-pane" data-pane="3">
+    <h2>Step 4 — Sign your application</h2>
+    <p style="font-size:.9rem;color:var(--mute);margin-bottom:.8rem">Type your <b>full name in CAPITAL LETTERS</b> to sign. This typed signature is your legal acknowledgement of the declaration above and is valid under the Electronic Communications and Transactions Act, 2021.</p>
+    <div class="form-row">
+      <label for="signName">Full name (in CAPITALS)</label>
+      <input id="signName" class="sign-name" placeholder="e.g. BRIAN MWALE" autocomplete="off" oninput="onSign()">
+      <p class="err" id="e_signName">Type your full name in capital letters to sign.</p>
+    </div>
+    <div class="sign-preview">
+      <div class="sig" id="sigPreview">—</div>
+      <div class="cap">Signed electronically on <span id="sigDate"></span></div>
+    </div>
+    <p class="err" id="submitErr"></p>
+    <div class="wizard-actions"><button class="btn outline" onclick="back(3)">Back</button><button class="btn teal" id="submitBtn" onclick="submitApp()">Submit application</button></div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="panel wizard-pane" data-pane="4" style="text-align:center">
+    <img src="../img/pusewu-logo.png" alt="" style="width:90px;margin:0 auto 1rem;background:#fff;border-radius:50%;padding:6px">
+    <h2 style="justify-content:center">Application submitted</h2>
+    <p style="font-size:.95rem;color:var(--mute);max-width:34rem;margin:0 auto 1rem" id="doneMsg"></p>
+    <div class="notice ok" id="switchNote" style="display:none;text-align:left">Your withdrawal notice under Cap 269 has been prepared and District HR / PMEC will be notified to switch your deduction to PUSEWU (F396).</div>
+    <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+      <a class="btn teal" href="login.html">Log in to your portal</a>
+      <a class="btn outline" href="../index.html">Back to website</a>
+    </div>
+    <p style="font-size:.82rem;color:var(--mute);margin-top:1rem" id="loginHint"></p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+let step=0, signed=false;
+
+document.getElementById('switching').addEventListener('change',e=>{
+  document.getElementById('priorWrap').style.display=e.target.checked?'block':'none';
+});
+
+document.getElementById('sigDate').textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+// Typed-name signature
+function onSign(){
+  const el=document.getElementById('signName');
+  // force uppercase as they type
+  const up=el.value.toUpperCase();
+  if(el.value!==up){ const p=el.selectionStart; el.value=up; el.setSelectionRange(p,p); }
+  const v=up.trim();
+  document.getElementById('sigPreview').textContent = v || '—';
+  // valid if at least two name parts, letters only, and in caps
+  signed = /^[A-Z][A-Z\s.'-]*[A-Z]$/.test(v) && v.split(/\s+/).length>=2;
+  if(signed) showErr('signName',false);
+}
+
+function showErr(id,show){ const e=document.getElementById('e_'+id); if(e)e.classList.toggle('show',show); }
+function val(id){ return (document.getElementById(id).value||'').trim(); }
+
+function goto(s){
+  step=s;
+  document.querySelectorAll('.wizard-pane').forEach(p=>p.classList.toggle('active',+p.dataset.pane===s));
+  document.querySelectorAll('.ws').forEach(w=>{ const n=+w.dataset.s; w.classList.toggle('active',n===s); w.classList.toggle('done',n<s); });
+  if(s===2) updateRateLine();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function back(from){ goto(from-1); }
+
+function updateRateLine(){
+  const bp=parseFloat(val('basicPay'));
+  const line=document.getElementById('rateLine');
+  if(bp>0){
+    line.textContent = `Your subscription is a set percentage of your basic pay (currently K${bp.toLocaleString()}). The exact percentage and the retirement portion are set by the union's Finance Office and confirmed on approval.`;
+  } else {
+    line.textContent = `Your subscription is a set percentage of your basic pay, confirmed by the union's Finance Office on approval.`;
+  }
+}
+
+function next(from){
+  if(from===0){
+    let ok=true;
+    if(!val('ministry')){ showErr('ministry',true); ok=false; } else showErr('ministry',false);
+    if(!document.getElementById('isPublic').checked){ showErr('isPublic',true); ok=false; } else showErr('isPublic',false);
+    if(ok) goto(1);
+  } else if(from===1){
+    let ok=true;
+    const req=['firstName','surname','nrc','phone','employeeNo','jobTitle'];
+    req.forEach(k=>{ const bad=!val(k); showErr(k,bad); if(bad)ok=false; });
+    const email=val('email'); const badE=!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email); showErr('email',badE); if(badE)ok=false;
+    const badBp=!(parseFloat(val('basicPay'))>0); showErr('basicPay',badBp); if(badBp)ok=false;
+    const badP=val('password').length<6; showErr('password',badP); if(badP)ok=false;
+    if(ok) goto(2);
+  } else if(from===2){
+    const all=['c1','c2','c3','c4'].every(id=>document.getElementById(id).checked);
+    showErr('consent',!all);
+    if(all) goto(3);
+  }
+}
+
+async function submitApp(){
+  onSign();
+  if(!signed){ showErr('signName',true); return; }
+  const signedName=val('signName');
+  const data={
+    firstName:val('firstName'), surname:val('surname'), nrc:val('nrc'), phone:val('phone'),
+    email:val('email'), employeeNo:val('employeeNo'), jobTitle:val('jobTitle'),
+    basicPay:parseFloat(val('basicPay'))||null,
+    ministry:val('ministry'), station:val('station'), password:val('password'),
+    switching:document.getElementById('switching').checked, priorUnion:val('priorUnion'),
+    signedName, signedAt:new Date().toISOString()
+  };
+  const btn=document.getElementById('submitBtn');
+  const err=document.getElementById('submitErr');
+  if(err) err.classList.remove('show');
+  if(btn){ btn.disabled=true; btn.textContent='Submitting…'; }
+  try{
+    const r=await PUSEWU.submitApplication(data);
+    document.getElementById('doneMsg').textContent =
+      `Thank you, ${data.firstName}. Your application (${r.ref}) has been received and is awaiting officer approval. Once approved, your details are submitted to PMEC to activate your deduction, and your retirement savings begin.`;
+    document.getElementById('loginHint').textContent = `You can log in now to track your status — email: ${r.email}`;
+    if(data.switching) document.getElementById('switchNote').style.display='block';
+    goto(4);
+  }catch(e){
+    if(err){ err.textContent=e.message; err.classList.add('show'); }
+    else { alert(e.message); }
+  }finally{
+    if(btn){ btn.disabled=false; btn.textContent='Submit application'; }
+  }
+}
+</script>
+</body>
+</html>

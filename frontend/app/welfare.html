@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welfare / Funeral Grant — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>Welfare Benefits</h1><p>Members can claim a funeral grant of K2,000. Submit your claim and track it here.</p></div>
+      <div class="grid-2" style="align-items:start">
+        <div class="panel">
+          <h2>File a funeral grant claim</h2>
+          <div class="form-row"><label for="rel">Relationship of the deceased</label>
+            <select id="rel"><option>Spouse</option><option>Child</option><option>Parent</option><option>Registered dependant</option><option>Member (claim by next-of-kin)</option></select></div>
+          <div class="form-row"><label for="dname">Full name of the deceased</label><input id="dname" placeholder="Full name"></div>
+          <button class="btn teal" id="fileBtn" onclick="fileClaim()">Submit claim</button>
+          <p class="err" id="err"></p>
+        </div>
+        <div class="tile accent"><div class="label">Funeral grant</div><div class="big">K2,000</div><div class="sub">Paid to members in good standing on an approved claim.</div></div>
+      </div>
+      <div id="list"></div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){ if(!PUSEWU.requireMember())return; PUSEWU.renderChrome('welfare'); await render(); })();
+async function fileClaim(){
+  const name=document.getElementById('dname').value.trim();
+  const err=document.getElementById('err'); err.classList.remove('show');
+  if(!name){ err.textContent='Enter the name of the deceased.'; err.classList.add('show'); return; }
+  const btn=document.getElementById('fileBtn'); btn.disabled=true; btn.textContent='Submitting…';
+  try{ await PUSEWU.fileClaim(document.getElementById('rel').value,name); document.getElementById('dname').value=''; await render(); }
+  catch(e){ err.textContent=e.message; err.classList.add('show'); }
+  finally{ btn.disabled=false; btn.textContent='Submit claim'; }
+}
+async function render(){
+  try{ const r=await PUSEWU.myWelfare(); const cs=r.claims||[];
+    document.getElementById('list').innerHTML=cs.length?
+      '<div class="panel"><h2>My claims</h2><table class="data"><thead><tr><th>Ref</th><th>Amount</th><th>Filed</th><th>Status</th></tr></thead><tbody>'+
+      cs.map(c=>`<tr><td><b>${c.ref}</b></td><td>${PUSEWU.money(c.amount)}</td><td>${(c.filed_on||'').slice(0,10)}</td><td><span class="pill warn dot">${c.status}</span></td></tr>`).join('')+'</tbody></table></div>':'';
+  }catch(e){ PUSEWU.showError(document.getElementById('list'),e); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — PUSEWU Member Portal</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head">
+        <h1 id="greeting">Welcome</h1>
+        <p>Here is your membership at a glance.</p>
+      </div>
+      <div id="statusNotice"></div>
+      <div class="grid-2" style="align-items:start">
+        <div class="membercard" id="memberCard"></div>
+        <div class="tile accent" id="savingsTile"></div>
+      </div>
+      <div class="grid-3" style="margin-top:1.2rem">
+        <div class="tile"><div class="label">Subscription</div><div class="big" id="subAmt">—</div><div class="sub" id="subSub">per month via PMEC</div></div>
+        <div class="tile"><div class="label">Open issues</div><div class="big" id="openIssues">—</div><div class="sub"><a href="cases.html">View my issues →</a></div></div>
+        <div class="tile"><div class="label">Member since</div><div class="big" id="memberSince">—</div><div class="sub" id="branchLine">—</div></div>
+      </div>
+      <div class="panel" style="margin-top:1.2rem">
+        <h2>Quick actions</h2>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+          <a class="btn teal sm" href="cases.html">Lodge an issue</a>
+          <a class="btn outline sm" href="loans.html">Apply for a soft loan</a>
+          <a class="btn outline sm" href="welfare.html">File a funeral grant claim</a>
+          <a class="btn outline sm" href="training.html">Book training</a>
+          <a class="btn outline sm" href="savings.html">View retirement savings</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){
+  if(!PUSEWU.requireMember()) return;
+  PUSEWU.renderChrome('dashboard');
+  try{
+    const d=await PUSEWU.myDashboard();
+    PUSEWU.setCurrency(d.settings.currency);
+    const m=d.member;
+    document.getElementById('greeting').textContent="Welcome, "+m.firstName+".";
+
+    const sn=document.getElementById('statusNotice');
+    if(m.status==='pending'){
+      sn.innerHTML='<div class="notice warn"><b>Application received.</b> Your membership is awaiting officer approval. Once approved, your PMEC deduction is activated and your retirement savings begin.</div>';
+    } else if(m.status==='at-risk'){
+      sn.innerHTML='<div class="notice warn"><b>Attention:</b> a recent PMEC deduction was missed. Please check with your District HR so your membership and savings are not interrupted.</div>';
+    } else if(m.status==='paid'){
+      sn.innerHTML='<div class="notice ok"><b>You are paid-up.</b> Your PMEC deduction is active and your retirement savings are growing.</div>';
+    }
+
+    const statusPill = m.status==='paid'?'<span class="pill ok dot">Paid-up</span>'
+      : m.status==='at-risk'?'<span class="pill warn dot">At-risk</span>'
+      : m.status==='rejected'?'<span class="pill danger dot">Not approved</span>'
+      : '<span class="pill info dot">Pending</span>';
+    document.getElementById('memberCard').innerHTML =
+      `<img class="seal" src="../img/pusewu-logo.png" alt="">
+       <div class="mc-label">PUSEWU Membership Card</div>
+       <div class="mc-name">${m.firstName} ${m.surname}</div>
+       <div>${statusPill}</div>
+       <div class="mc-row">
+         <div><span>Member No.</span><b>${m.memberNo||'—'}</b></div>
+         <div><span>Ministry</span><b>${m.ministry||'—'}</b></div>
+       </div>
+       <div class="mc-row">
+         <div><span>Employee No.</span><b>${m.employeeNo||'—'}</b></div>
+         <div><span>Branch</span><b>${m.branch||'—'}</b></div>
+       </div>
+       <svg class="qr" viewBox="0 0 100 100" aria-label="QR code"><rect width="100" height="100" fill="#fff"/>
+         <g fill="#0C3D3D"><rect x="6" y="6" width="24" height="24"/><rect x="12" y="12" width="12" height="12" fill="#fff"/>
+         <rect x="70" y="6" width="24" height="24"/><rect x="76" y="12" width="12" height="12" fill="#fff"/>
+         <rect x="6" y="70" width="24" height="24"/><rect x="12" y="76" width="12" height="12" fill="#fff"/>
+         <rect x="40" y="10" width="6" height="6"/><rect x="52" y="10" width="6" height="6"/><rect x="40" y="40" width="6" height="6"/>
+         <rect x="50" y="46" width="8" height="8"/><rect x="66" y="44" width="6" height="6"/><rect x="80" y="52" width="6" height="6"/>
+         <rect x="44" y="66" width="6" height="6"/><rect x="60" y="70" width="6" height="6"/><rect x="74" y="74" width="10" height="10"/><rect x="88" y="66" width="6" height="6"/></g>
+       </svg>`;
+
+    const pct = Math.min(100, Math.round((d.savings.contributingMonths/36)*100));
+    document.getElementById('savingsTile').innerHTML =
+      `<div class="label">My retirement savings</div>
+       <div class="big">${PUSEWU.money(d.savings.retirementTotal)}</div>
+       <div class="sub">${d.savings.contributingMonths} contributing months · saved from your subscription</div>
+       <div class="progress" style="margin-top:.8rem"><span style="width:${pct}%"></span></div>
+       <div class="sub">${pct}% toward 36-month maturity</div>
+       <div style="margin-top:.9rem"><a class="btn gold sm" href="savings.html">See statement</a></div>`;
+
+    document.getElementById('openIssues').textContent=d.openCases;
+    document.getElementById('memberSince').textContent=(m.joinedOn||'').slice(0,4)||'—';
+    document.getElementById('branchLine').textContent=m.branch||'';
+    if(m.status==='pending' || d.deduction.gross==null){
+      document.getElementById('subAmt').textContent='—';
+      document.getElementById('subSub').textContent = d.deduction.gross==null?'awaiting Finance configuration':'activates on approval';
+    } else {
+      document.getElementById('subAmt').textContent=PUSEWU.money(d.deduction.gross);
+      document.getElementById('subSub').textContent=PUSEWU.pct(d.settings.deductionRate)+' of basic · code '+(d.settings.deductionCode||'F396');
+    }
+  }catch(e){ PUSEWU.showError(document.getElementById('statusNotice'),e); }
+})();
+</script>
+</body>
+</html>

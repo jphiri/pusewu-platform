@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Issues — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>My Issues</h1><p>Lodge a workplace issue and follow it from Received to Resolved. You'll be notified at each stage.</p></div>
+      <div class="panel">
+        <h2>Lodge a new issue</h2>
+        <div class="form-row"><label for="ctype">Issue type</label>
+          <select id="ctype"><option>Salary / Allowance Dispute</option><option>Unfair Dismissal</option><option>Disciplinary Matter</option><option>Redeployment / Transfer</option><option>Wrongful Payroll Deduction</option><option>Conditions of Service</option><option>Other</option></select></div>
+        <div class="form-row"><label for="cdetail">Describe the issue <span class="hint">(what happened, when, and any evidence you have)</span></label>
+          <textarea id="cdetail" rows="3" placeholder="Briefly describe your issue..."></textarea></div>
+        <button class="btn teal" id="lodgeBtn" onclick="lodge()">Submit issue</button>
+        <p class="err" id="lodgeErr"></p>
+      </div>
+      <div id="list"></div>
+    </div>
+  </main>
+</div>
+<div class="modal-back" id="modal"><div class="modal" id="modalBody"></div></div>
+<script src="app.js"></script>
+<script>
+let _cases=[];
+(async function(){
+  if(!PUSEWU.requireMember()) return;
+  PUSEWU.renderChrome('cases');
+  await render();
+})();
+function statusLabel(s){return ({received:'Received',under_review:'Under Review',in_negotiation:'In Negotiation',resolved:'Resolved',closed:'Closed'})[s]||s;}
+function statusPill(s){ if(s==='resolved'||s==='closed')return '<span class="pill ok dot">'+statusLabel(s)+'</span>'; if(s==='received')return '<span class="pill info dot">Received</span>'; return '<span class="pill warn dot">'+statusLabel(s)+'</span>'; }
+async function render(){
+  const wrap=document.getElementById('list');
+  try{
+    const r=await PUSEWU.myCases(); _cases=r.cases||[];
+    if(!_cases.length){ wrap.innerHTML='<div class="panel"><p class="sub" style="color:var(--mute)">You have no issues lodged yet.</p></div>'; return; }
+    wrap.innerHTML='<div class="panel"><h2>My lodged issues</h2><table class="data"><thead><tr><th>Ref</th><th>Type</th><th>Opened</th><th>Status</th><th></th></tr></thead><tbody>'+
+      _cases.map(c=>`<tr><td><b>${c.ref}</b></td><td>${c.type}</td><td>${(c.opened_on||'').slice(0,10)}</td><td>${statusPill(c.status)}</td><td><button class="btn outline sm" onclick="openCase('${c.id}')">Track</button></td></tr>`).join('')+'</tbody></table></div>';
+  }catch(e){ PUSEWU.showError(wrap,e); }
+}
+async function lodge(){
+  const type=document.getElementById('ctype').value;
+  const detail=document.getElementById('cdetail').value.trim();
+  const btn=document.getElementById('lodgeBtn'), err=document.getElementById('lodgeErr');
+  err.classList.remove('show'); btn.disabled=true; btn.textContent='Submitting…';
+  try{
+    const r=await PUSEWU.lodgeCase(type,detail);
+    document.getElementById('cdetail').value='';
+    await render(); openCase(r.case.id);
+  }catch(e){ err.textContent=e.message; err.classList.add('show'); }
+  finally{ btn.disabled=false; btn.textContent='Submit issue'; }
+}
+function openCase(id){
+  const c=_cases.find(x=>x.id===id); if(!c)return;
+  const events=(c.events||[]).map((ev,i,arr)=>`<li class="${i<arr.length-1?'done':'current'}"><div class="t-title">${ev.title}</div><div class="t-meta">${ev.note||''}</div></li>`).join('');
+  document.getElementById('modalBody').innerHTML=`<button class="close" onclick="closeModal()">×</button>
+    <h2>${c.ref}</h2><p class="muted" style="color:var(--mute);margin-bottom:1rem">${c.type}</p>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem">${statusPill(c.status)} <span class="pill info">SLA: ${c.sla||'—'}</span></div>
+    <p style="font-size:.9rem;margin-bottom:1rem"><b>Assigned to:</b> ${c.officer||'Awaiting assignment'}</p>
+    ${c.detail?`<p style="font-size:.9rem;background:var(--paper);padding:.8rem;border-radius:10px;margin-bottom:1rem">${c.detail}</p>`:''}
+    <h2 class="mt" style="font-size:1rem">Progress</h2><ul class="timeline">${events||'<li class="current"><div class="t-title">Received</div></li>'}</ul>`;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retirement Savings — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>Retirement Savings Scheme</h1><p>A portion of your monthly subscription is saved in your name, matures 36 months after your first contribution, and is paid out on retirement.</p></div>
+      <div class="grid-3">
+        <div class="tile accent"><div class="label">Total accrued</div><div class="big" id="tTotal">—</div><div class="sub">in your name</div></div>
+        <div class="tile"><div class="label">Contributing months</div><div class="big" id="tMonths">—</div><div class="sub">saved to retirement</div></div>
+        <div class="tile"><div class="label">Maturity</div><div class="big" id="tMature">—</div><div class="sub" id="tMatureSub">36 months from first contribution</div></div>
+      </div>
+      <div class="panel"><h2>Progress to maturity</h2><div class="progress"><span id="bar" style="width:0%"></span></div><p class="sub" id="progText" style="color:var(--mute);font-size:.85rem"></p></div>
+      <div class="panel"><h2>Statement</h2><div id="stmtWrap"></div></div>
+      <div class="notice info">On retirement, your matured savings are paid out immediately. If PMEC misses a monthly deduction, no retirement credit is added for that month — the gap is shown above so you and the union can act early.</div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){
+  if(!PUSEWU.requireMember()) return;
+  PUSEWU.renderChrome('savings');
+  try{
+    const d=await PUSEWU.myDashboard();
+    PUSEWU.setCurrency(d.settings.currency);
+    const s=d.savings, m=d.member;
+    document.getElementById('tTotal').textContent=PUSEWU.money(s.retirementTotal);
+    document.getElementById('tMonths').textContent=s.contributingMonths;
+    const pct=Math.min(100,Math.round((s.contributingMonths/36)*100));
+    document.getElementById('bar').style.width=pct+'%';
+    document.getElementById('progText').textContent=`${s.contributingMonths} of 36 months (${pct}%). First contribution: ${m.firstContribution||'—'}.`;
+    if(m.firstContribution){
+      const dt=new Date(m.firstContribution); dt.setMonth(dt.getMonth()+36);
+      document.getElementById('tMature').textContent=dt.toLocaleString('en',{month:'short',year:'numeric'});
+      const remaining=Math.max(0,36-s.contributingMonths);
+      document.getElementById('tMatureSub').textContent=remaining>0?remaining+' months remaining':'Matured';
+    }
+    const rows=(s.history||[]).slice().reverse().map(h=>{
+      const period=new Date(h.period).toLocaleString('en',{month:'short',year:'numeric'});
+      return `<tr><td>${period}</td><td>${h.paid?'<span class="pill ok">Deducted</span>':'<span class="pill danger">Missed</span>'}</td>
+        <td>${h.paid?PUSEWU.money(h.amount):'—'}</td><td>${h.paid?('<b style="color:var(--ok)">+'+PUSEWU.money(h.retirement)+'</b>'):PUSEWU.money(0)}</td></tr>`;}).join('');
+    document.getElementById('stmtWrap').innerHTML=(s.history&&s.history.length)?
+      `<table class="data"><thead><tr><th>Month</th><th>PMEC deduction</th><th>Subscription</th><th>Retirement credit</th></tr></thead><tbody>${rows}</tbody></table>`
+      :'<p class="sub" style="color:var(--mute)">No contributions yet. Your savings begin once your application is approved and PMEC activates the deduction.</p>';
+  }catch(e){ PUSEWU.showError(document.getElementById('stmtWrap'),e); }
+})();
+</script>
+</body>
+</html>

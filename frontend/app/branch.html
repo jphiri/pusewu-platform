@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Branch — PUSEWU</title><meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-body">
+<header class="app-header" id="appHeader"></header>
+<div class="app-shell">
+  <aside class="app-nav" id="appNav"></aside>
+  <main class="app-main">
+    <div class="page active">
+      <div class="page-head"><h1>My Branch</h1><p id="branchSub">Members for your branch only.</p></div>
+      <div class="grid-3">
+        <div class="tile"><div class="label">Branch members</div><div class="big" id="bMembers">—</div><div class="sub">paid-up in your branch</div></div>
+        <div class="tile"><div class="label">At-risk</div><div class="big" id="bRisk" style="color:var(--warn)">—</div><div class="sub">missed a deduction</div></div>
+        <div class="tile"><div class="label">Pending</div><div class="big" id="bPending">—</div><div class="sub">awaiting approval</div></div>
+      </div>
+      <div class="panel"><h2>Branch membership</h2>
+        <p style="font-size:.9rem;color:var(--mute);margin-bottom:.8rem">A branch representative sees only members in their own branch.</p>
+        <table class="data"><thead><tr><th>Member</th><th>Ministry</th><th>Employee No.</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+<script>
+(async function(){
+  if(!PUSEWU.requireRole('rep'))return; PUSEWU.renderChrome('branch');
+  try{
+    const r=await PUSEWU.branch();
+    document.getElementById('branchSub').textContent='Members for '+(r.branch||'your branch')+'.';
+    const ms=r.members||[];
+    const pill=s=>s==='paid'?'<span class="pill ok dot">Paid-up</span>':s==='at-risk'?'<span class="pill warn dot">At-risk</span>':s==='lost'?'<span class="pill danger dot">Lost</span>':'<span class="pill info dot">Pending</span>';
+    document.getElementById('rows').innerHTML=ms.length?ms.map(x=>`<tr><td>${x.first_name} ${x.surname}</td><td>${x.ministry||''}</td><td>${x.employee_no||''}</td><td>${pill(x.status)}</td></tr>`).join(''):'<tr><td colspan="4" style="color:var(--mute)">No members in your branch yet.</td></tr>';
+    document.getElementById('bMembers').textContent=ms.filter(x=>x.status==='paid').length;
+    document.getElementById('bRisk').textContent=ms.filter(x=>x.status==='at-risk').length;
+    document.getElementById('bPending').textContent=ms.filter(x=>x.status==='pending').length;
+  }catch(e){ PUSEWU.showError(document.getElementById('rows').parentElement,e); }
+})();
+</script>
+</body>
+</html>
